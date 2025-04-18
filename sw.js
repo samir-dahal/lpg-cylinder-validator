@@ -3,6 +3,7 @@ const ASSETS = [
     '/',
     '/index.html',
     '/app.js',
+    '/cylinderguide.jpeg',
     '/icon512_maskable.png',
     '/icon512_rounded.png'
 ];
