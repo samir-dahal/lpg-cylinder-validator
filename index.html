@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Check your LPG gas cylinder expiry date easily. Stay safe and aware with this simple checker tool." />
+    <meta property="og:title" content="LPG Gas Cylinder Expiry Checker" />
+    <meta property="og:description"
+        content="Quickly verify your LPG gas cylinder expiry code (e.g. A24) and get safety suggestions. Ideal for users in India and Nepal." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/lpg-checker" />
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg" />
+    <title>LPG Gas Cylinder Checker</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="script.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+    <div id="app" class="max-w-md mx-auto px-4 py-8">
+        <h1 class="text-2xl font-semibold text-center text-gray-800 mb-6">
+            LPG Cylinder Expiry Checker
+        </h1>
+
+        <div class="mb-5">
+            <label for="code" class="block text-sm font-medium text-gray-700 mb-1">
+                Enter Cylinder Code (e.g., <code
+                    class="bg-gray-100 px-1 rounded text-sm">B{{currentYearPlaceHolder}}</code>)
+            </label>
+            <input v-model="codeInput" @input="checkCode" type="text" id="code"
+                :placeholder="`B${currentYearPlaceHolder}`"
+                class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div v-if="result" class="space-y-6">
+            <!-- Status Banner with Tailwind Alert Like Bootstrap -->
+            <div v-if="result.status.includes('OK')"
+                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <span>Your cylinder is safe to use. Review again periodically.</span>
+                </div>
+            </div>
+
+            <div v-if="result.status.includes('Warning')"
+                class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <span>Your cylinder is close to expiry. It is highly recommended to replace it soon.</span>
+                </div>
+            </div>
+
+            <div v-if="result.status.includes('Expired')"
+                class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <span>This cylinder has expired. Please stop using it and return it to your supplier.</span>
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div class="bg-white rounded-lg shadow p-5 space-y-4 text-sm">
+                <div>
+                    <p class="text-gray-500 mb-1">Entered Code</p>
+                    <code class="block bg-gray-100 px-2 py-1 rounded font-mono text-base text-gray-800">
+                {{ result.input }}
+              </code>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <!-- Expiry Date -->
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-gray-500 text-sm mb-1">Expiry Date</p>
+                        <p class="text-base font-medium text-blue-700">{{ result.expiryDate }}</p>
+                    </div>
+
+                    <!-- Time Remaining -->
+                    <div v-show="result.timeLeft" class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-gray-500 text-sm mb-1">Time Remaining</p>
+                        <p class="text-base font-medium text-blue-600">{{ result.timeLeft }}</p>
+                    </div>
+                </div>
+
+                <div class="p-3 border-l-4 rounded text-sm" :class="{
+                'bg-yellow-50 border-yellow-400 text-yellow-800': result.status.includes('Warning'),
+                'bg-red-50 border-red-400 text-red-800': result.status.includes('Expired')
+              }" v-if="result.status.includes('Warning') || result.status.includes('Expired')">
+                    <strong>Important:</strong>
+                    <span v-if="result.status.includes('Warning')">
+                        Your cylinder is close to expiring. Avoid heavy movement and check for any leaks. Plan a
+                        replacement soon.
+                    </span>
+                    <span v-else>
+                        This cylinder has passed its safe usage period. Immediate replacement is necessary to ensure
+                        safety.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Precaution Tips -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Usage Guidelines</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+                    <li>Keep cylinder upright at all times.</li>
+                    <li>Check for leaks using soap solution (not open flame).</li>
+                    <li>Do not tamper with the safety valve or regulator.</li>
+                    <li>Verify expiry code before each refill or purchase.</li>
+                </ul>
+            </div>
+
+            <!-- Quarter Months Table -->
+            <div class="bg-white rounded-lg shadow p-5">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Quarter Code Breakdown</h3>
+                <table class="min-w-full bg-gray-50 border border-gray-200 rounded-lg">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 text-left text-gray-600 border-b">Quarter Code</th>
+                            <th class="px-4 py-2 text-left text-gray-600 border-b">Months</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 text-gray-800">A</td>
+                            <td class="px-4 py-2 text-gray-800">Jan - Mar</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-gray-800">B</td>
+                            <td class="px-4 py-2 text-gray-800">Apr - Jun</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-gray-800">C</td>
+                            <td class="px-4 py-2 text-gray-800">Jul - Sep</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 text-gray-800">D</td>
+                            <td class="px-4 py-2 text-gray-800">Oct - Dec</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer Note -->
+            <p class="text-xs text-center text-gray-500 mt-6">
+                Always inspect your cylinder’s expiry before use or purchase. Safety first.
+            </p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
