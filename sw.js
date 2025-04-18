@@ -2,7 +2,6 @@ const CACHE_NAME = 'cylinder-checker-v1';
 const ASSETS = [
     '/',
     '/index.html',
-    '/styles.css',
     '/app.js',
     '/icon512_maskable.png',
     '/icon512_rounded.png'
